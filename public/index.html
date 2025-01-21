@@ -3,194 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MindfulAI Journal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <title>Mindscape | AI Journal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <style>
-        :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --secondary: #4f46e5;
-            --accent: #06b6d4;
-            --background: #0f172a;
-            --surface: rgba(30, 41, 59, 0.7);
-            --text: #f8fafc;
-            --text-secondary: #94a3b8;
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Space Grotesk', sans-serif;
+            font-family: 'Outfit', sans-serif;
         }
 
         body {
-            background: var(--background);
-            color: var(--text);
+            background: #0f172a;
+            color: #e2e8f0;
             min-height: 100vh;
             overflow-x: hidden;
         }
 
-        .app-container {
-            position: relative;
-            min-height: 100vh;
-            padding: 2rem;
-            background: radial-gradient(circle at top, rgba(37, 99, 235, 0.1), transparent 70%);
-        }
-
-        .nav-bar {
+        #background-animation {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            padding: 1rem 2rem;
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(10px);
-            z-index: 100;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            height: 100%;
+            z-index: -1;
         }
 
-        .nav-logo {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary);
-            text-decoration: none;
+        .container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
         }
 
-        .nav-logo i {
-            font-size: 2rem;
+        .journal-section, .insights-section {
+            backdrop-filter: blur(12px);
+            background: rgba(30, 41, 59, 0.4);
+            border-radius: 24px;
+            padding: 2rem;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            transition: transform 0.3s ease;
         }
 
-        .hero-section {
-            margin-top: 5rem;
-            padding: 4rem 2rem;
-            text-align: center;
-            position: relative;
+        .journal-section:hover, .insights-section:hover {
+            transform: translateY(-5px);
         }
 
-        .hero-title {
-            font-size: 4rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
+        .title {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 1.5rem;
-            opacity: 0;
-            transform: translateY(30px);
+            font-weight: 600;
         }
 
-        .input-card {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background: var(--surface);
-            backdrop-filter: blur(16px);
-            border-radius: 24px;
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            transform: translateY(20px);
-            opacity: 0;
-        }
-
-        textarea {
+        .journal-input {
             width: 100%;
-            min-height: 200px;
+            height: 400px;
             padding: 1.5rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(99, 102, 241, 0.2);
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.2);
             border-radius: 16px;
-            color: var(--text);
+            color: #e2e8f0;
             font-size: 1.1rem;
             resize: vertical;
             transition: all 0.3s ease;
+            line-height: 1.6;
         }
 
-        textarea:focus {
+        .journal-input:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 20px rgba(37, 99, 235, 0.2);
+            border-color: #60a5fa;
+            box-shadow: 0 0 20px rgba(96, 165, 250, 0.2);
         }
 
         .analyze-btn {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
             color: white;
             border: none;
             padding: 1rem 2rem;
             border-radius: 12px;
-            font-weight: 600;
-            font-size: 1rem;
+            font-weight: 500;
+            font-size: 1.1rem;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-top: 1.5rem;
+            margin-top: 1rem;
             transition: all 0.3s ease;
+            width: 100%;
         }
 
         .analyze-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+            box-shadow: 0 8px 20px rgba(96, 165, 250, 0.3);
         }
 
         .analyze-btn:disabled {
-            background: #4b5563;
+            background: #475569;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
-        .results-grid {
+        .insights-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 3rem auto;
-            opacity: 0;
-            transform: translateY(20px);
+            gap: 1.5rem;
+            margin-top: 1rem;
         }
 
-        .result-card {
-            background: var(--surface);
-            backdrop-filter: blur(16px);
-            border-radius: 20px;
-            padding: 2rem;
-            border: 1px solid rgba(99, 102, 241, 0.2);
+        .insight-card {
+            background: rgba(15, 23, 42, 0.6);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
             transition: all 0.3s ease;
         }
 
-        .result-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+        .insight-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(96, 165, 250, 0.3);
         }
 
-        .badge {
-            display: inline-block;
+        .severity {
+            display: inline-flex;
+            align-items: center;
             padding: 0.5rem 1rem;
             border-radius: 8px;
-            font-weight: 600;
+            font-weight: 500;
             margin-bottom: 1rem;
-            background: rgba(37, 99, 235, 0.2);
-            color: var(--accent);
+        }
+
+        .severity.high { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+        .severity.medium { background: rgba(245, 158, 11, 0.2); color: #fcd34d; }
+        .severity.low { background: rgba(34, 197, 94, 0.2); color: #86efac; }
+
+        .health-meter {
+            width: 100%;
+            height: 8px;
+            background: rgba(148, 163, 184, 0.2);
+            border-radius: 4px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .health-meter-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #60a5fa, #a78bfa);
+            transition: width 1s ease;
+        }
+
+        .card-title {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .problem-list, .recommendation-list {
+            list-style: none;
+        }
+
+        .problem-list li, .recommendation-list li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .problem-list li:before {
+            content: "•";
+            color: #60a5fa;
+        }
+
+        .recommendation-list li:before {
+            content: "→";
+            color: #a78bfa;
         }
 
         .loading {
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 3rem;
+            height: 200px;
+            color: #94a3b8;
         }
 
         .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(37, 99, 235, 0.1);
-            border-left-color: var(--primary);
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(96, 165, 250, 0.1);
+            border-left-color: #60a5fa;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -199,164 +207,162 @@
             to { transform: rotate(360deg); }
         }
 
-        .insight-item {
-            background: rgba(99, 102, 241, 0.1);
-            padding: 1rem;
-            border-radius: 12px;
-            margin-top: 1rem;
-            border-left: 4px solid var(--primary);
-        }
-
-        @media (max-width: 768px) {
-            .hero-title {
-                font-size: 2.5rem;
-            }
-
-            .input-card {
-                margin: 1rem;
-            }
-
-            .results-grid {
+        @media (max-width: 1024px) {
+            .container {
                 grid-template-columns: 1fr;
-                padding: 1rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="nav-bar">
-        <a href="#" class="nav-logo">
-            <i class="fas fa-brain"></i>
-            MindfulAI Journal
-        </a>
-    </div>
+    <canvas id="background-animation"></canvas>
 
-    <div class="app-container">
-        <section class="hero-section">
-            <h1 class="hero-title">Transform Your Thoughts Into Insights</h1>
-        </section>
-
-        <div class="input-card">
-            <form id="journalForm">
-                <textarea 
-                    id="journalInput" 
-                    placeholder="Share your thoughts, feelings, and experiences..."
-                    required></textarea>
-                <button type="submit" id="analyzeBtn" class="analyze-btn" disabled>
-                    <i class="fas fa-sparkles"></i> Generate Insights
-                </button>
-            </form>
+    <div class="container">
+        <div class="journal-section">
+            <h1 class="title">Your Journal</h1>
+            <textarea 
+                class="journal-input" 
+                placeholder="Write your thoughts here..."
+                id="journalInput"></textarea>
+            <button id="analyzeBtn" class="analyze-btn" disabled>
+                Generate Insights
+            </button>
         </div>
 
-        <div id="results" class="results-container"></div>
+        <div class="insights-section">
+            <h1 class="title">AI Insights</h1>
+            <div id="results" class="insights-grid"></div>
+        </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Initialize animations
-            gsap.to('.hero-title', {
-                opacity: 1,
-                y: 0,
-                duration: 1.2,
-                ease: 'power4.out'
-            });
+        // Background Animation
+        const canvas = document.getElementById('background-animation');
+        const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-            gsap.to('.input-card', {
-                opacity: 1,
-                y: 0,
-                duration: 1,
-                delay: 0.3,
-                ease: 'power3.out'
-            });
+        // Set renderer size
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x000000, 0);
 
-            const form = document.getElementById('journalForm');
-            const input = document.getElementById('journalInput');
-            const analyzeBtn = document.getElementById('analyzeBtn');
-            const results = document.getElementById('results');
+        // Create particles
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 1000;
+        const posArray = new Float32Array(particlesCount * 3);
 
-            input.addEventListener('input', () => {
-                analyzeBtn.disabled = !input.value.trim();
-            });
+        for(let i = 0; i < particlesCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 10;
+        }
 
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const text = input.value.trim();
-                
-                analyzeBtn.disabled = true;
-                results.innerHTML = `
-                    <div class="loading">
-                        <div class="loading-spinner"></div>
-                    </div>
-                `;
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
 
-                try {
-                    const response = await fetch('/api/analyze', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ text })
-                    });
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 0.005,
+            color: 0x60a5fa,
+            transparent: true,
+            opacity: 0.8
+        });
 
-                    const data = await response.json();
-                    
-                    if (response.ok) {
-                        results.innerHTML = `
-                            <div class="results-grid">
-                                <div class="result-card">
-                                    <span class="badge">Mental State: ${data.mentalState}</span>
-                                    <h3>Emotional Analysis</h3>
-                                    <div class="insight-item">
-                                        ${data.emotionalAnalysis}
-                                    </div>
-                                </div>
-                                
-                                <div class="result-card">
-                                    <span class="badge">Healthy Thinking: ${data.healthyThinkingScore}%</span>
-                                    <h3>Thought Patterns</h3>
-                                    <div class="insight-item">
-                                        ${data.thoughtPatterns}
-                                    </div>
-                                </div>
-                                
-                                <div class="result-card">
-                                    <span class="badge">Areas of Attention</span>
-                                    <h3>Therapist Insights</h3>
-                                    <div class="insight-item">
-                                        ${data.therapistInsights}
-                                    </div>
-                                </div>
-                            </div>
-                        `;
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
 
-                        gsap.from('.results-grid', {
-                            opacity: 0,
-                            y: 20,
-                            duration: 0.8,
-                            ease: 'power3.out'
-                        });
+        camera.position.z = 5;
 
-                        gsap.from('.result-card', {
-                            opacity: 0,
-                            y: 20,
-                            duration: 0.8,
-                            stagger: 0.2,
-                            ease: 'power3.out'
-                        });
-                    } else {
-                        throw new Error(data.error);
-                    }
-                } catch (error) {
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            particlesMesh.rotation.y += 0.001;
+            particlesMesh.rotation.x += 0.001;
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Journal functionality
+        const journalInput = document.getElementById('journalInput');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const results = document.getElementById('results');
+
+        journalInput.addEventListener('input', () => {
+            analyzeBtn.disabled = !journalInput.value.trim();
+        });
+
+        analyzeBtn.addEventListener('click', async () => {
+            const text = journalInput.value.trim();
+            if (!text) return;
+
+            analyzeBtn.disabled = true;
+            results.innerHTML = '<div class="loading"><div class="loading-spinner"></div></div>';
+
+            try {
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
                     results.innerHTML = `
-                        <div class="result-card error">
-                            <h3><i class="fas fa-exclamation-circle"></i> Error</h3>
-                            <p>${error.message || 'Failed to analyze entry'}</p>
+                        <div class="insight-card">
+                            <h3 class="card-title">Severity Assessment</h3>
+                            <span class="severity ${data.severity.toLowerCase()}">${data.severity}</span>
+                            <h3 class="card-title">Mental Health Score</h3>
+                            <div class="health-meter">
+                                <div class="health-meter-fill" style="width: ${data.healthScore}%"></div>
+                            </div>
+                            <span>${data.healthScore}%</span>
+                        </div>
+
+                        <div class="insight-card">
+                            <h3 class="card-title">Identified Issues</h3>
+                            <ul class="problem-list">
+                                ${data.problems.map(problem => `
+                                    <li>${problem}</li>
+                                `).join('')}
+                            </ul>
+                        </div>
+
+                        <div class="insight-card">
+                            <h3 class="card-title">Recommendations</h3>
+                            <ul class="recommendation-list">
+                                ${data.recommendations.map(rec => `
+                                    <li>${rec}</li>
+                                `).join('')}
+                            </ul>
                         </div>
                     `;
-                } finally {
-                    analyzeBtn.disabled = false;
+
+                    // Animate cards
+                    gsap.from('.insight-card', {
+                        opacity: 0,
+                        y: 20,
+                        duration: 0.6,
+                        stagger: 0.2,
+                        ease: 'power3.out'
+                    });
+                } else {
+                    throw new Error(data.error);
                 }
-            });
+            } catch (error) {
+                results.innerHTML = `
+                    <div class="insight-card">
+                        <h3 class="card-title">Error</h3>
+                        <p>${error.message || 'Failed to analyze entry'}</p>
+                    </div>
+                `;
+            } finally {
+                analyzeBtn.disabled = false;
+            }
         });
     </script>
 </body>
