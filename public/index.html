@@ -161,29 +161,48 @@
             font-size: 0.9rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 0.5rem;
+            margin-bottom: 1rem;
         }
 
-        .problem-list, .recommendation-list {
+        .problem-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .problem-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            background: rgba(96, 165, 250, 0.1);
+            color: #60a5fa;
+            border: 1px solid rgba(96, 165, 250, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .problem-badge:hover {
+            transform: translateY(-2px);
+            background: rgba(96, 165, 250, 0.2);
+        }
+
+        .recommendation-list {
             list-style: none;
         }
 
-        .problem-list li, .recommendation-list li {
-            padding: 0.75rem 0;
-            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+        .recommendation-item {
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            background: rgba(96, 165, 250, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(96, 165, 250, 0.2);
+            transition: all 0.3s ease;
         }
 
-        .problem-list li:before {
-            content: "•";
-            color: #60a5fa;
-        }
-
-        .recommendation-list li:before {
-            content: "→";
-            color: #a78bfa;
+        .recommendation-item:hover {
+            transform: translateX(5px);
+            background: rgba(96, 165, 250, 0.2);
         }
 
         .loading {
@@ -242,11 +261,9 @@
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-        // Set renderer size
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setClearColor(0x000000, 0);
 
-        // Create particles
         const particlesGeometry = new THREE.BufferGeometry();
         const particlesCount = 1000;
         const posArray = new Float32Array(particlesCount * 3);
@@ -269,7 +286,6 @@
 
         camera.position.z = 5;
 
-        // Animation loop
         function animate() {
             requestAnimationFrame(animate);
             particlesMesh.rotation.y += 0.001;
@@ -279,7 +295,6 @@
 
         animate();
 
-        // Handle window resize
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
@@ -320,25 +335,30 @@
                             <div class="health-meter">
                                 <div class="health-meter-fill" style="width: ${data.healthScore}%"></div>
                             </div>
-                            <span>${data.healthScore}%</span>
+                            <span>${data.healthScore}/100</span>
                         </div>
 
                         <div class="insight-card">
                             <h3 class="card-title">Identified Issues</h3>
-                            <ul class="problem-list">
-                                ${data.problems.map(problem => `
-                                    <li>${problem}</li>
+                            <div class="problem-badges">
+                                ${data.problemTags.map(tag => `
+                                    <span class="problem-badge">${tag}</span>
                                 `).join('')}
-                            </ul>
+                            </div>
+                            <div class="problems-detail">
+                                ${data.problems.map(problem => `
+                                    <p class="problem-detail">${problem}</p>
+                                `).join('')}
+                            </div>
                         </div>
 
                         <div class="insight-card">
                             <h3 class="card-title">Recommendations</h3>
-                            <ul class="recommendation-list">
+                            <div class="recommendation-list">
                                 ${data.recommendations.map(rec => `
-                                    <li>${rec}</li>
+                                    <div class="recommendation-item">${rec}</div>
                                 `).join('')}
-                            </ul>
+                            </div>
                         </div>
                     `;
 
@@ -349,6 +369,23 @@
                         duration: 0.6,
                         stagger: 0.2,
                         ease: 'power3.out'
+                    });
+
+                    // Animate badges and recommendations
+                    gsap.from('.problem-badge', {
+                        scale: 0,
+                        opacity: 0,
+                        duration: 0.4,
+                        stagger: 0.1,
+                        ease: 'back.out'
+                    });
+
+                    gsap.from('.recommendation-item', {
+                        x: -20,
+                        opacity: 0,
+                        duration: 0.4,
+                        stagger: 0.1,
+                        ease: 'power2.out'
                     });
                 } else {
                     throw new Error(data.error);
