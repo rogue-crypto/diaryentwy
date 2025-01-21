@@ -14,7 +14,7 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Serve index.html for the root route
+// Serve index.html
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -29,22 +29,27 @@ app.post('/api/analyze', async (req, res) => {
         }
 
         const prompt = `
-        Analyze this journal entry and provide insights in exactly this format:
+        Analyze this journal entry comprehensively and provide insights in exactly this format:
+
         SEVERITY: [High/Medium/Low]
         HEALTH_SCORE: [0-100]
-        PROBLEMS: [List 2-3 key issues identified, separated by semicolons]
-        RECOMMENDATIONS: [2-3 practical steps to improve, separated by semicolons]
+        IDENTIFIED_PROBLEMS: [List all detected issues like anxiety, depression, stress, relationship issues, work stress, substance use, etc. Separate with semicolons]
+        PROBLEM_TAGS: [Short 1-2 word tags for each problem, e.g., "Anxiety", "Work Stress", etc. Separate with semicolons]
+        RECOMMENDATIONS: [List 4-5 specific, actionable self-help suggestions. Do not recommend professional help. Focus on practical steps, lifestyle changes, and self-improvement activities. Separate with semicolons]
 
-        Journal Entry: "${text}"`;
+        Journal Entry: "${text}"
+        
+        Important: Keep recommendations ethical and avoid suggesting professional consultation. Focus on practical self-help strategies.`;
 
         const result = await model.generateContent(prompt);
         const response = await result.response.text();
 
-        // Parse the response
+        // Parse the response with enhanced error handling
         const analysis = {
-            severity: response.match(/SEVERITY: (.*)/)?.[1]?.trim() || 'N/A',
-            healthScore: parseInt(response.match(/HEALTH_SCORE: (\d+)/)?.[1]) || 0,
-            problems: (response.match(/PROBLEMS: (.*)/)?.[1]?.trim() || '').split(';').map(p => p.trim()),
+            severity: response.match(/SEVERITY: (.*)/)?.[1]?.trim() || 'Medium',
+            healthScore: parseInt(response.match(/HEALTH_SCORE: (\d+)/)?.[1]) || 70,
+            problems: (response.match(/IDENTIFIED_PROBLEMS: (.*)/)?.[1]?.trim() || '').split(';').map(p => p.trim()),
+            problemTags: (response.match(/PROBLEM_TAGS: (.*)/)?.[1]?.trim() || '').split(';').map(t => t.trim()),
             recommendations: (response.match(/RECOMMENDATIONS: (.*)/)?.[1]?.trim() || '').split(';').map(r => r.trim())
         };
 
@@ -56,18 +61,6 @@ app.post('/api/analyze', async (req, res) => {
     }
 });
 
-// Handle 404 errors
-app.use((req, res) => {
-    res.status(404).sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// Global error handler
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({ error: 'Something went wrong!' });
-});
-
-// Start server
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
