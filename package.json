@@ -9,7 +9,12 @@
   "dependencies": {
     "@google/generative-ai": "^0.1.3",
     "dotenv": "^16.3.1",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "express-rate-limit": "^6.0.0", // Add the latest version after install
+    "helmet": "^6.1.6",            // Add the latest version after install
+    "cors": "^2.8.5",              // Add the latest version after install
+    "compression": "^1.7.4",       // Add the latest version after install
+    "morgan": "^1.10.0"            // Add the latest version after install
   },
   "engines": {
     "node": ">=18.0.0"
