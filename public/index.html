@@ -128,18 +128,44 @@
             border-color: rgba(96, 165, 250, 0.3);
         }
 
-        .severity {
+        .badge {
             display: inline-flex;
             align-items: center;
             padding: 0.5rem 1rem;
             border-radius: 8px;
             font-weight: 500;
-            margin-bottom: 1rem;
+            margin: 0.25rem;
+            color: white;
+            transition: all 0.3s ease;
         }
 
-        .severity.high { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
-        .severity.medium { background: rgba(245, 158, 11, 0.2); color: #fcd34d; }
-        .severity.low { background: rgba(34, 197, 94, 0.2); color: #86efac; }
+        .badge:hover {
+            transform: translateY(-2px);
+        }
+
+        .badge.severity.high { 
+            background: rgba(239, 68, 68, 0.8);
+        }
+
+        .badge.severity.medium { 
+            background: rgba(245, 158, 11, 0.8);
+        }
+
+        .badge.severity.low { 
+            background: rgba(34, 197, 94, 0.8);
+        }
+
+        .badge.problem {
+            background: rgba(99, 102, 241, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .badge.recommendation {
+            background: rgba(139, 92, 246, 0.8);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            display: block;
+            margin: 0.5rem 0;
+        }
 
         .health-meter {
             width: 100%;
@@ -162,47 +188,14 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 1rem;
+            font-weight: 600;
         }
 
-        .problem-badges {
+        .problem-badges, .recommendation-badges {
             display: flex;
             flex-wrap: wrap;
             gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .problem-badge {
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            background: rgba(96, 165, 250, 0.1);
-            color: #60a5fa;
-            border: 1px solid rgba(96, 165, 250, 0.2);
-            transition: all 0.3s ease;
-        }
-
-        .problem-badge:hover {
-            transform: translateY(-2px);
-            background: rgba(96, 165, 250, 0.2);
-        }
-
-        .recommendation-list {
-            list-style: none;
-        }
-
-        .recommendation-item {
-            padding: 1rem;
-            margin-bottom: 0.5rem;
-            background: rgba(96, 165, 250, 0.1);
-            border-radius: 8px;
-            border: 1px solid rgba(96, 165, 250, 0.2);
-            transition: all 0.3s ease;
-        }
-
-        .recommendation-item:hover {
-            transform: translateX(5px);
-            background: rgba(96, 165, 250, 0.2);
+            margin: 1rem 0;
         }
 
         .loading {
@@ -255,7 +248,6 @@
     </div>
 
     <script>
-        // Background Animation
         const canvas = document.getElementById('background-animation');
         const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
         const scene = new THREE.Scene();
@@ -301,7 +293,6 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-        // Journal functionality
         const journalInput = document.getElementById('journalInput');
         const analyzeBtn = document.getElementById('analyzeBtn');
         const results = document.getElementById('results');
@@ -330,39 +321,38 @@
                     results.innerHTML = `
                         <div class="insight-card">
                             <h3 class="card-title">Severity Assessment</h3>
-                            <span class="severity ${data.severity.toLowerCase()}">${data.severity}</span>
+                            <span class="badge severity ${data.severity.toLowerCase()}">${data.severity} Severity</span>
                             <h3 class="card-title">Mental Health Score</h3>
                             <div class="health-meter">
                                 <div class="health-meter-fill" style="width: ${data.healthScore}%"></div>
                             </div>
-                            <span>${data.healthScore}/100</span>
+                            <span>${data.healthScore}%</span>
                         </div>
 
                         <div class="insight-card">
                             <h3 class="card-title">Identified Issues</h3>
                             <div class="problem-badges">
                                 ${data.problemTags.map(tag => `
-                                    <span class="problem-badge">${tag}</span>
+                                    <span class="badge problem">${tag}</span>
                                 `).join('')}
                             </div>
                             <div class="problems-detail">
                                 ${data.problems.map(problem => `
-                                    <p class="problem-detail">${problem}</p>
+                                    <span class="badge problem">${problem}</span>
                                 `).join('')}
                             </div>
                         </div>
 
                         <div class="insight-card">
                             <h3 class="card-title">Recommendations</h3>
-                            <div class="recommendation-list">
+                            <div class="recommendation-badges">
                                 ${data.recommendations.map(rec => `
-                                    <div class="recommendation-item">${rec}</div>
+                                    <span class="badge recommendation">${rec}</span>
                                 `).join('')}
                             </div>
                         </div>
                     `;
 
-                    // Animate cards
                     gsap.from('.insight-card', {
                         opacity: 0,
                         y: 20,
@@ -371,8 +361,7 @@
                         ease: 'power3.out'
                     });
 
-                    // Animate badges and recommendations
-                    gsap.from('.problem-badge', {
+                    gsap.from('.badge', {
                         scale: 0,
                         opacity: 0,
                         duration: 0.4,
@@ -380,13 +369,6 @@
                         ease: 'back.out'
                     });
 
-                    gsap.from('.recommendation-item', {
-                        x: -20,
-                        opacity: 0,
-                        duration: 0.4,
-                        stagger: 0.1,
-                        ease: 'power2.out'
-                    });
                 } else {
                     throw new Error(data.error);
                 }
